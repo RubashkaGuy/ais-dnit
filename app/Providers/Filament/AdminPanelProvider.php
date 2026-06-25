@@ -69,6 +69,76 @@ class AdminPanelProvider extends PanelProvider
             ->globalSearch()
             ->globalSearchKeyBindings(['command+k', 'ctrl+k'])
             ->renderHook(
+                PanelsRenderHook::AUTH_LOGIN_FORM_AFTER,
+                fn (): string => <<<'HTML'
+                    <details class="fi-login-help">
+                        <summary>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <circle cx="12" cy="12" r="10" />
+                                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                                <line x1="12" y1="17" x2="12.01" y2="17" />
+                            </svg>
+                            <span>Как получить аккаунт?</span>
+                        </summary>
+                        <div class="fi-login-help-body">
+                            <p>Учётные записи создаёт администратор АИС.</p>
+                            <p>Для получения доступа обратитесь к администратору ДНиТ: сообщите ФИО, должность и подразделение — после этого вы получите логин и пароль.</p>
+                        </div>
+                    </details>
+                    <style>
+                        .fi-login-help {
+                            margin-top: 1rem;
+                            border: 1px solid var(--gray-200);
+                            border-radius: 0.5rem;
+                            background-color: rgba(31, 168, 227, 0.04);
+                            overflow: hidden;
+                        }
+                        .dark .fi-login-help {
+                            border-color: var(--gray-700);
+                            background-color: rgba(124, 201, 238, 0.06);
+                        }
+                        .fi-login-help > summary {
+                            display: flex;
+                            align-items: center;
+                            gap: 0.5rem;
+                            padding: 0.625rem 0.875rem;
+                            font-size: 0.875rem;
+                            font-weight: 500;
+                            color: var(--primary-700);
+                            cursor: pointer;
+                            list-style: none;
+                            user-select: none;
+                        }
+                        .dark .fi-login-help > summary {
+                            color: var(--primary-300);
+                        }
+                        .fi-login-help > summary::-webkit-details-marker {
+                            display: none;
+                        }
+                        .fi-login-help > summary svg {
+                            width: 1rem;
+                            height: 1rem;
+                            flex-shrink: 0;
+                        }
+                        .fi-login-help > summary:hover {
+                            background-color: rgba(31, 168, 227, 0.08);
+                        }
+                        .fi-login-help-body {
+                            padding: 0 0.875rem 0.75rem 0.875rem;
+                            font-size: 0.8125rem;
+                            line-height: 1.45;
+                            color: var(--gray-700);
+                        }
+                        .dark .fi-login-help-body {
+                            color: var(--gray-300);
+                        }
+                        .fi-login-help-body p {
+                            margin: 0.375rem 0;
+                        }
+                    </style>
+                HTML,
+            )
+            ->renderHook(
                 PanelsRenderHook::STYLES_AFTER,
                 fn (): string => <<<'HTML'
                     <style>

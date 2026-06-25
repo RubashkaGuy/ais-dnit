@@ -28,6 +28,13 @@ class AdminPanelAccessTest extends TestCase
         $this->get('/admin')->assertRedirect('/admin/login');
     }
 
+    public function test_login_page_includes_account_help_section(): void
+    {
+        $this->get('/admin/login')
+            ->assertOk()
+            ->assertSee('Как получить аккаунт?');
+    }
+
     public function test_admin_user_can_access_panel(): void
     {
         $admin = User::factory()->admin()->create();

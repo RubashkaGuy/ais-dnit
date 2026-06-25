@@ -4,10 +4,12 @@ namespace App\Filament\Resources\Activities;
 
 use App\Filament\Resources\Activities\Pages\ListActivities;
 use App\Filament\Resources\Activities\Tables\ActivitiesTable;
+use App\Models\User;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Models\Activity;
 
 class ActivityResource extends Resource
@@ -34,6 +36,28 @@ class ActivityResource extends Resource
     public static function canCreate(): bool
     {
         return false;
+    }
+
+    public static function canViewAny(): bool
+    {
+        return self::isAdmin();
+    }
+
+    public static function canView(Model $record): bool
+    {
+        return self::isAdmin();
+    }
+
+    public static function canAccess(): bool
+    {
+        return self::isAdmin();
+    }
+
+    private static function isAdmin(): bool
+    {
+        $user = auth()->user();
+
+        return $user instanceof User && $user->isAdmin();
     }
 
     public static function getPages(): array
