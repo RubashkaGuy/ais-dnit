@@ -83,6 +83,72 @@ class AdminPanelProvider extends PanelProvider
                 HTML,
             )
             ->renderHook(
+                PanelsRenderHook::BODY_END,
+                fn (): string => <<<'HTML'
+                    <script>
+                        (function () {
+                            const prefetched = new Set();
+                            let queue = null;
+
+                            function schedule(work) {
+                                if ('requestIdleCallback' in window) {
+                                    return window.requestIdleCallback(work, { timeout: 1500 });
+                                }
+                                return window.setTimeout(work, 250);
+                            }
+
+                            function cancel(handle) {
+                                if (handle === null) return;
+                                if ('cancelIdleCallback' in window) {
+                                    try { window.cancelIdleCallback(handle); return; } catch (e) {}
+                                }
+                                window.clearTimeout(handle);
+                            }
+
+                            function prefetchSidebar() {
+                                cancel(queue);
+                                queue = null;
+
+                                const links = Array.from(
+                                    document.querySelectorAll('.fi-sidebar a[wire\\:navigate\\.hover][href]')
+                                ).filter((link) => {
+                                    const href = link.getAttribute('href');
+                                    if (!href || prefetched.has(href)) return false;
+                                    try {
+                                        const url = new URL(href, document.baseURI);
+                                        if (url.origin !== window.location.origin) return false;
+                                        if (url.pathname === window.location.pathname) return false;
+                                    } catch (e) { return false; }
+                                    return true;
+                                });
+
+                                let i = 0;
+                                function next() {
+                                    if (i >= links.length) { queue = null; return; }
+                                    const link = links[i++];
+                                    const href = link.getAttribute('href');
+                                    prefetched.add(href);
+                                    link.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
+                                    window.setTimeout(() => {
+                                        link.dispatchEvent(new MouseEvent('mouseleave', { bubbles: true }));
+                                        queue = schedule(next);
+                                    }, 90);
+                                }
+
+                                queue = schedule(next);
+                            }
+
+                            document.addEventListener('livewire:navigated', prefetchSidebar);
+                            if (document.readyState === 'loading') {
+                                document.addEventListener('DOMContentLoaded', prefetchSidebar);
+                            } else {
+                                prefetchSidebar();
+                            }
+                        })();
+                    </script>
+                HTML,
+            )
+            ->renderHook(
                 PanelsRenderHook::AUTH_LOGIN_FORM_AFTER,
                 fn (): string => <<<'HTML'
                     <details class="fi-login-help">
