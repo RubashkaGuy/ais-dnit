@@ -1,0 +1,5 @@
+providers = ["php", "node"]
+
+[variables]
+NIXPACKS_PHP_VERSION = "8.4"
+NIXPACKS_PHP_EXTENSIONS = "intl,zip,gd,pdo_mysql,bcmath,mbstring,exif"
