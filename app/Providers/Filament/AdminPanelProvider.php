@@ -56,6 +56,7 @@ class AdminPanelProvider extends PanelProvider
             ))
             ->brandLogoHeight('2.5rem')
             ->favicon(asset('images/image.png'))
+            ->spa(hasPrefetching: true)
             ->colors([
                 'primary' => Color::hex('#1FA8E3'),
                 'info' => Color::Sky,
@@ -68,6 +69,19 @@ class AdminPanelProvider extends PanelProvider
             ->sidebarCollapsibleOnDesktop()
             ->globalSearch()
             ->globalSearchKeyBindings(['command+k', 'ctrl+k'])
+            ->renderHook(
+                PanelsRenderHook::HEAD_START,
+                fn (): string => <<<'HTML'
+                    <meta name="color-scheme" content="light dark">
+                    <style>
+                        html { background-color: #EEF2F7; }
+                        html.dark { background-color: #0F172A; }
+                        @media (prefers-color-scheme: dark) {
+                            html:not(.light) { background-color: #0F172A; }
+                        }
+                    </style>
+                HTML,
+            )
             ->renderHook(
                 PanelsRenderHook::AUTH_LOGIN_FORM_AFTER,
                 fn (): string => <<<'HTML'
